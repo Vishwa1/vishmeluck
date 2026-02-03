@@ -1,53 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vishmeluck – Indian Market Dashboard</title>
+  <title>Vishmeluck – Sector Heatmap</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="p-4 max-w-6xl mx-auto">
 
 <h1 class="text-2xl font-bold mb-4">
-  Vishmeluck – Indian Stock Dashboard
+  Vishmeluck – Indian Sector Heatmap
 </h1>
 
-<div class="grid md:grid-cols-3 gap-4 mb-6">
-
-  <div class="border rounded-2xl shadow p-4">
-    <div class="font-semibold">NIFTY 50</div>
-    <div class="text-xl">--</div>
-  </div>
-
-  <div class="border rounded-2xl shadow p-4">
-    <div class="font-semibold">SENSEX</div>
-    <div class="text-xl">--</div>
-  </div>
-
-  <div class="border rounded-2xl shadow p-4">
-    <div class="font-semibold">BANK NIFTY</div>
-    <div class="text-xl">--</div>
-  </div>
-
-</div>
-
-<h2 class="font-semibold mb-2">Top Gainers</h2>
-<div class="border rounded-2xl shadow p-4 mb-6">
-  Data will load here
-</div>
-
-<h2 class="font-semibold mb-2">Top Losers</h2>
-<div class="border rounded-2xl shadow p-4 mb-6">
-  Data will load here
-</div>
-
-<h2 class="font-semibold mb-2">Sector Performance</h2>
 <div class="border rounded-2xl shadow p-4">
-  Data will load here
+
+<h2 class="font-semibold mb-3">Sector Performance</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+<div class="p-4 rounded-xl text-center bg-green-200">
+  <div class="font-semibold">IT</div>
+  <div class="text-sm">+1.2%</div>
 </div>
 
-<p class="mt-4 text-sm opacity-70">
-Ready for NSE live data in next step.
+<div class="p-4 rounded-xl text-center bg-red-100">
+  <div class="font-semibold">BANK</div>
+  <div class="text-sm">-0.6%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-green-100">
+  <div class="font-semibold">PHARMA</div>
+  <div class="text-sm">+0.4%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-green-100">
+  <div class="font-semibold">AUTO</div>
+  <div class="text-sm">+0.9%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-red-100">
+  <div class="font-semibold">FMCG</div>
+  <div class="text-sm">-0.3%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-red-200">
+  <div class="font-semibold">METAL</div>
+  <div class="text-sm">-1.1%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-green-100">
+  <div class="font-semibold">ENERGY</div>
+  <div class="text-sm">+0.7%</div>
+</div>
+
+<div class="p-4 rounded-xl text-center bg-green-200">
+  <div class="font-semibold">REALTY</div>
+  <div class="text-sm">+1.5%</div>
+</div>
+
+</div>
+
+<p class="text-xs opacity-70 mt-3">
+Darker green = strong sector | Darker red = weak sector
 </p>
+
+</div>
 
 </body>
 </html>
