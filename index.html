@@ -1,69 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vishmeluck – Sector Heatmap</title>
+  <title>Vishmeluck – Sector Drilldown</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="p-4 max-w-6xl mx-auto">
 
 <h1 class="text-2xl font-bold mb-4">
-  Vishmeluck – Indian Sector Heatmap
+  Vishmeluck – Sector Heatmap (Equity & Options Focus)
 </h1>
 
-<div class="border rounded-2xl shadow p-4">
+<div class="border rounded-2xl shadow p-4 mb-6">
 
-<h2 class="font-semibold mb-3">Sector Performance</h2>
+<h2 class="font-semibold mb-3">Click a Sector</h2>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-
-<div class="p-4 rounded-xl text-center bg-green-200">
-  <div class="font-semibold">IT</div>
-  <div class="text-sm">+1.2%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-red-100">
-  <div class="font-semibold">BANK</div>
-  <div class="text-sm">-0.6%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-green-100">
-  <div class="font-semibold">PHARMA</div>
-  <div class="text-sm">+0.4%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-green-100">
-  <div class="font-semibold">AUTO</div>
-  <div class="text-sm">+0.9%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-red-100">
-  <div class="font-semibold">FMCG</div>
-  <div class="text-sm">-0.3%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-red-200">
-  <div class="font-semibold">METAL</div>
-  <div class="text-sm">-1.1%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-green-100">
-  <div class="font-semibold">ENERGY</div>
-  <div class="text-sm">+0.7%</div>
-</div>
-
-<div class="p-4 rounded-xl text-center bg-green-200">
-  <div class="font-semibold">REALTY</div>
-  <div class="text-sm">+1.5%</div>
-</div>
-
-</div>
+<div id="sectorGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 
 <p class="text-xs opacity-70 mt-3">
-Darker green = strong sector | Darker red = weak sector
+Darker green = strong | Darker red = weak
 </p>
 
 </div>
+
+<div id="drill" class="hidden">
+
+<h2 class="font-bold mb-2" id="sectorTitle"></h2>
+
+<div class="grid md:grid-cols-2 gap-4">
+
+<div class="border rounded-2xl shadow p-4">
+<h3 class="font-semibold mb-2">Top 10 Gainers</h3>
+<div id="gainers"></div>
+</div>
+
+<div class="border rounded-2xl shadow p-4">
+<h3 class="font-semibold mb-2">Top 10 Losers</h3>
+<div id="losers"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const sectors = [
+  { name: "IT", v: 1.2 },
+  { name: "BANK", v: -0.6 },
+  { name: "PHARMA", v: 0.4 },
+  { name: "AUTO", v: 0.9 },
+  { name: "FMCG", v: -0.3 },
+  { name: "METAL", v: -1.1 },
+  { name: "ENERGY", v: 0.7 },
+  { name: "REALTY", v: 1.5 }
+];
+
+const mock = {
+  "IT": {
+    g: ["TCS","INFY","WIPRO","HCL","LTTS","MPHASIS","COFORGE","PERSISTENT","ZENSAR","TECHM"],
+    l: ["OFSS","SONATA","BSOFT","KPIT","HAPPSTMNDS","TATAELXSI","CYIENT","NEWGEN","AFFLE","RATEGAIN"]
+  },
+  "BANK": {
+    g: ["HDFCBANK","ICICIBANK","AXISBANK","SBIN","KOTAK","FEDERAL","IDFCFIRST","INDUSIND","AUBANK","BANDHANBNK"],
+    l: ["PNB","BANKBARODA","CANBK","IOB","UCOBANK","YESBANK","RBLBANK","SOUTHBANK","CUB","MAHABANK"]
+  }
+};
+
+function style(v){
+  if(v>1) return 'bg-green-200';
+  if(v>0) return 'bg-green-100';
+  if(v>-1) return 'bg-red-100';
+  return 'bg-red-200';
+}
+
+const grid = document.getElementById('sectorGrid');
+
+sectors.forEach(s=>{
+  const d=document.createElement('div');
+  d.className=`p-4 rounded-xl text-center cursor-pointer ${style(s.v)}`;
+  d.innerHTML=`<div class="font-semibold">${s.name}</div><div class="text-sm">${s.v}%</div>`;
+  d.onclick=()=>openSector(s.name);
+  grid.appendChild(d);
+});
+
+function openSector(name){
+  document.getElementById('drill').classList.remove('hidden');
+  document.getElementById('sectorTitle').innerText=name+" Sector";
+
+  const g=mock[name]?.g||[];
+  const l=mock[name]?.l||[];
+
+  document.getElementById('gainers').innerHTML=
+    g.map(x=>`<div class='py-1 flex justify-between'><span>${x}</span><span class='text-green-700'>↑</span></div>`).join('');
+
+  document.getElementById('losers').innerHTML=
+    l.map(x=>`<div class='py-1 flex justify-between'><span>${x}</span><span class='text-red-700'>↓</span></div>`).join('');
+}
+
+</script>
 
 </body>
 </html>
