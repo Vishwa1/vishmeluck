@@ -1,42 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vishmeluck – Sector Drilldown</title>
+  <title>Vishmeluck – Live Sector Drilldown</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="p-4 max-w-6xl mx-auto">
 
 <h1 class="text-2xl font-bold mb-4">
-  Vishmeluck – Sector Heatmap (Equity & Options Focus)
+  Vishmeluck – Equity & Stock Options Dashboard
 </h1>
 
 <div class="border rounded-2xl shadow p-4 mb-6">
-
 <h2 class="font-semibold mb-3">Click a Sector</h2>
-
 <div id="sectorGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-
-<p class="text-xs opacity-70 mt-3">
-Darker green = strong | Darker red = weak
-</p>
-
 </div>
 
 <div id="drill" class="hidden">
-
 <h2 class="font-bold mb-2" id="sectorTitle"></h2>
 
 <div class="grid md:grid-cols-2 gap-4">
 
 <div class="border rounded-2xl shadow p-4">
 <h3 class="font-semibold mb-2">Top 10 Gainers</h3>
-<div id="gainers"></div>
+<div id="gainers">Loading...</div>
 </div>
 
 <div class="border rounded-2xl shadow p-4">
 <h3 class="font-semibold mb-2">Top 10 Losers</h3>
-<div id="losers"></div>
+<div id="losers">Loading...</div>
 </div>
 
 </div>
@@ -47,23 +39,15 @@ Darker green = strong | Darker red = weak
 const sectors = [
   { name: "IT", v: 1.2 },
   { name: "BANK", v: -0.6 },
-  { name: "PHARMA", v: 0.4 },
   { name: "AUTO", v: 0.9 },
-  { name: "FMCG", v: -0.3 },
-  { name: "METAL", v: -1.1 },
-  { name: "ENERGY", v: 0.7 },
-  { name: "REALTY", v: 1.5 }
+  { name: "PHARMA", v: 0.4 }
 ];
 
-const mock = {
-  "IT": {
-    g: ["TCS","INFY","WIPRO","HCL","LTTS","MPHASIS","COFORGE","PERSISTENT","ZENSAR","TECHM"],
-    l: ["OFSS","SONATA","BSOFT","KPIT","HAPPSTMNDS","TATAELXSI","CYIENT","NEWGEN","AFFLE","RATEGAIN"]
-  },
-  "BANK": {
-    g: ["HDFCBANK","ICICIBANK","AXISBANK","SBIN","KOTAK","FEDERAL","IDFCFIRST","INDUSIND","AUBANK","BANDHANBNK"],
-    l: ["PNB","BANKBARODA","CANBK","IOB","UCOBANK","YESBANK","RBLBANK","SOUTHBANK","CUB","MAHABANK"]
-  }
+const sectorStocks = {
+  "IT": ["TCS.NS","INFY.NS","WIPRO.NS","HCLTECH.NS","TECHM.NS","LTIM.NS","PERSISTENT.NS","COFORGE.NS"],
+  "BANK": ["HDFCBANK.NS","ICICIBANK.NS","SBIN.NS","AXISBANK.NS","KOTAKBANK.NS","INDUSINDBK.NS","FEDERALBNK.NS"],
+  "AUTO": ["TATAMOTORS.NS","MARUTI.NS","M&M.NS","HEROMOTOCO.NS","BAJAJ-AUTO.NS"],
+  "PHARMA": ["SUNPHARMA.NS","DRREDDY.NS","CIPLA.NS","DIVISLAB.NS","LUPIN.NS"]
 };
 
 function style(v){
@@ -73,28 +57,50 @@ function style(v){
   return 'bg-red-200';
 }
 
-const grid = document.getElementById('sectorGrid');
+const grid=document.getElementById('sectorGrid');
 
 sectors.forEach(s=>{
   const d=document.createElement('div');
   d.className=`p-4 rounded-xl text-center cursor-pointer ${style(s.v)}`;
-  d.innerHTML=`<div class="font-semibold">${s.name}</div><div class="text-sm">${s.v}%</div>`;
+  d.innerHTML=`<div class=\"font-semibold\">${s.name}</div><div class=\"text-sm\">${s.v}%</div>`;
   d.onclick=()=>openSector(s.name);
   grid.appendChild(d);
 });
 
-function openSector(name){
+async function fetchQuotes(symbols){
+  const url=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
+  const r=await fetch(url);
+  const j=await r.json();
+  return j.quoteResponse.result.map(x=>({
+    symbol:x.symbol.replace('.NS',''),
+    price:x.regularMarketPrice,
+    change:x.regularMarketChangePercent
+  }));
+}
+
+async function openSector(name){
   document.getElementById('drill').classList.remove('hidden');
   document.getElementById('sectorTitle').innerText=name+" Sector";
 
-  const g=mock[name]?.g||[];
-  const l=mock[name]?.l||[];
+  const list=sectorStocks[name]||[];
+  const data=await fetchQuotes(list);
+
+  const sorted=[...data].sort((a,b)=>b.change-a.change);
+
+  const gain=sorted.slice(0,10);
+  const lose=[...sorted].reverse().slice(0,10);
 
   document.getElementById('gainers').innerHTML=
-    g.map(x=>`<div class='py-1 flex justify-between'><span>${x}</span><span class='text-green-700'>↑</span></div>`).join('');
+    gain.map(x=>`<div class='py-1 flex justify-between'>
+      <span>${x.symbol}</span>
+      <span class='text-green-700'>${x.change.toFixed(2)}%</span>
+    </div>`).join('');
 
   document.getElementById('losers').innerHTML=
-    l.map(x=>`<div class='py-1 flex justify-between'><span>${x}</span><span class='text-red-700'>↓</span></div>`).join('');
+    lose.map(x=>`<div class='py-1 flex justify-between'>
+      <span>${x.symbol}</span>
+      <span class='text-red-700'>${x.change.toFixed(2)}%</span>
+    </div>`).join('');
 }
 
 </script>
